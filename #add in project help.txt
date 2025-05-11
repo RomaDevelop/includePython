@@ -1,13 +1,23 @@
-1. Добавить PYTHONPATH в PyCharm
-	В меню: Run → Edit Configurations...
-	Выберите вашу конфигурацию запуска (или создайте новую).
-	Найдите поле "Environment variables", нажмите ....
-	Добавьте переменную:
-	PYTHONPATH=полный_путь_к_общим_модулям
-	или даже относительный
-	PYTHONPATH=../include
-	(на Windows — используйте ; вместо : если добавляете к другим путям)
+В PyCharm чере Add Content Root (всё работает)
+	Settings - Project: ProjectName - Project Structure - Add Content Root - указать папку
+
+В PyCharm через конфигурацию запуска (недоступны подсказки)
+	1. Добавить PYTHONPATH в PyCharm
+		В меню: Run → Edit Configurations...
+		Выберите вашу конфигурацию запуска (или создайте новую).
+		Найдите поле "Environment variables", нажмите ....
+		Добавьте переменную:
+		PYTHONPATH=полный_путь_к_общим_модулям
+		или даже относительный
+		PYTHONPATH=../include
+		(на Windows — используйте ; вместо : если добавляете к другим путям)
+		
+	2. Импорт модуля
+		# noinspection PyUnresolvedReferences (это нужно если среда выдает ошибку, что не найден модуль)
+		from MyQExecute import MyQExecute
 	
-2. Импорт модуля
-	# noinspection PyUnresolvedReferences (это нужно если среда выдает ошибку, что не найден модуль)
-	from MyQExecute import MyQExecute
+Способ независимый от IDE (IDE и не увидит, не будут доступны подсказки)
+	import sys
+	import os
+	include_dir = os.path.abspath(os.path.join(os.getcwd(), "..", "include"))
+	sys.path.append(include_dir)
