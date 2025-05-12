@@ -60,6 +60,8 @@ class MyQDialogs:
     def menu_under_widget(widget: QWidget, items: list[MenuItem]):
         menu = QMenu(widget)
 
+        need to add None workers check
+
         # обработка действия
         def trigger_action(menu_item: MyQDialogs.MenuItem):
             menu_item.worker()

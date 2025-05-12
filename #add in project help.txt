@@ -1,7 +1,9 @@
-В PyCharm чере Add Content Root (всё работает)
+Способ 1 (всё работает)
+В PyCharm чере Add Content Root 
 	Settings - Project: ProjectName - Project Structure - Add Content Root - указать папку
 
-В PyCharm через конфигурацию запуска (недоступны подсказки)
+Способ 2 (недоступны подсказки)
+В PyCharm через конфигурацию запуска 
 	1. Добавить PYTHONPATH в PyCharm
 		В меню: Run → Edit Configurations...
 		Выберите вашу конфигурацию запуска (или создайте новую).
@@ -16,7 +18,9 @@
 		# noinspection PyUnresolvedReferences (это нужно если среда выдает ошибку, что не найден модуль)
 		from MyQExecute import MyQExecute
 	
-Способ независимый от IDE (IDE и не увидит, не будут доступны подсказки)
+Способ 3 (недоступны подсказки)
+Независимый от IDE (IDE и не увидит, не будут доступны подсказки)
+	в файле проекта добавить код
 	import sys
 	import os
 	include_dir = os.path.abspath(os.path.join(os.getcwd(), "..", "include"))
