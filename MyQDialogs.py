@@ -4,7 +4,24 @@ from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenu,QWidget, QDialog, QMessageBox, QVBoxLayout, QTextEdit, QPushButton, QHBoxLayout
 
+from my_shortings import qmb_error
+
+
 class MyQDialogs:
+
+    @staticmethod
+    def show_text(captionDialog: str, text: str = '', w: int = 640, h: int = 480):
+        dialog = QDialog()
+        dialog.setWindowTitle(captionDialog)
+
+        vloAll = QVBoxLayout(dialog)
+        textEdit = QTextEdit()
+        textEdit.setReadOnly(True)
+        textEdit.setTabStopDistance(40)
+        textEdit.setText(text)
+        vloAll.addWidget(textEdit)
+        dialog.resize(w, h)
+        dialog.exec()
 
     class InputTextRes:
         def __init__(self):
@@ -60,8 +77,6 @@ class MyQDialogs:
     def menu_under_widget(widget: QWidget, items: list[MenuItem]):
         menu = QMenu(widget)
 
-        need to add None workers check
-
         # обработка действия
         def trigger_action(menu_item: MyQDialogs.MenuItem):
             menu_item.worker()
@@ -70,6 +85,10 @@ class MyQDialogs:
         for item in items:
             if item.text == MyQDialogs.MenuItem.SEPARATOR: menu.addSeparator()
             else:
+                if not item.worker:
+                    qmb_error("nullptr worker in action " + item.text)
+                    continue
+
                 action = QAction(item.text, menu)
                 menu.addAction(action)
                 action.triggered.connect(lambda _, item_copy=item: trigger_action(item_copy))
