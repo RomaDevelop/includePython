@@ -74,14 +74,21 @@ class MyQDialogs:
             return MyQDialogs.MenuItem(MyQDialogs.MenuItem.SEPARATOR, None)
 
     @staticmethod
-    def menu_under_widget(widget: QWidget, items: list[MenuItem]):
-        menu = QMenu(widget)
+    def menu_in_pos(pos: QPoint, items: list[MenuItem], parent: QWidget = None):
+        menu = QMenu(parent)
 
-        # обработка действия
+        '''
+        items = [
+            MyQDialogs.MenuItem("Option 1", lambda: print("1")),
+            MyQDialogs.MenuItem("Option 2", lambda: print("2")),
+        ]
+        MyQDialogs.menu_in_pos(pos, items, widget)
+        MyQDialogs.menu_under_widget(row_in_table.btnOther, items)
+        '''
+
         def trigger_action(menu_item: MyQDialogs.MenuItem):
             menu_item.worker()
 
-        # сохранение замыкания
         for item in items:
             if item.text == MyQDialogs.MenuItem.SEPARATOR: menu.addSeparator()
             else:
@@ -93,15 +100,13 @@ class MyQDialogs:
                 menu.addAction(action)
                 action.triggered.connect(lambda _, item_copy=item: trigger_action(item_copy))
 
-        menu.exec(widget.mapToGlobal(QPoint(1, widget.height())))
+        menu.exec(pos)
 
-        '''
-        items = [
-            MyQDialogs.MenuItem("Option 1", lambda: print("1")),
-            MyQDialogs.MenuItem("Option 2", lambda: print("2")),
-        ]
-        MyQDialogs.menu_under_widget(row_in_table.btnOther, items)
-        '''
+    @staticmethod
+    def menu_under_widget(widget: QWidget, items: list[MenuItem]):
+        menu = QMenu(widget)
+
+        MyQDialogs.menu_in_pos(widget.mapToGlobal(QPoint(1, widget.height())), items, widget)
 
     @staticmethod
     def custom_dialog(caption: str, text: str, buttons: list[str]) -> str:
