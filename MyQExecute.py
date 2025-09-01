@@ -13,7 +13,7 @@ class MyQExecute:
             return False
 
     @staticmethod
-    def execute(file, args=None):
+    def execute(file, args=None) -> bool:
         ERROR_PREFIX = "MyQExecute::Execute: объект " + file
         do_open_url = False
 
@@ -30,7 +30,7 @@ class MyQExecute:
                 start_res = QProcess.startDetached(file, args if args is not None else [])  # запускем через QProcess
                 if not start_res:
                     print(ERROR_PREFIX + ": QProcess::startDetached returned false")
-                return start_res
+                return start_res[0]
             else:
                 do_open_url = True  # если нет - запустим через QDesktopServices
 
@@ -46,7 +46,7 @@ class MyQExecute:
         return False
 
     @staticmethod
-    def open_dir(directory):
+    def open_dir(directory) -> bool:
         file_info = QFileInfo(directory)
 
         if not file_info.isSymLink() and file_info.isDir():
