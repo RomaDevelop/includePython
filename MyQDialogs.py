@@ -1,8 +1,10 @@
+from collections.abc import Sequence
 from typing import List
 
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu,QWidget, QDialog, QMessageBox, QVBoxLayout, QTextEdit, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QMenu, QWidget, QDialog, QMessageBox, QVBoxLayout, QTextEdit, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QListWidget
 
 from my_shortings import qmb_error
 
@@ -29,33 +31,78 @@ class MyQDialogs:
             self.text = ""
 
     @staticmethod
-    def input_text(captionDialog: str, startText: str = '', w: int = 640, h: int = 480) -> InputTextRes:
+    def input_text(caption_dialog: str, start_text: str = '', w: int = 640, h: int = 480) -> InputTextRes:
         dialog = QDialog()
         res = MyQDialogs.InputTextRes()
-        dialog.setWindowTitle(captionDialog)
+        dialog.setWindowTitle(caption_dialog)
 
-        vloAll = QVBoxLayout(dialog)
-        textEdit = QTextEdit()
-        textEdit.setTabStopDistance(40)
-        textEdit.setText(startText)
-        textEdit.setAcceptRichText(False)
-        vloAll.addWidget(textEdit)
+        vlo_all = QVBoxLayout(dialog)
+        text_edit = QTextEdit()
+        text_edit.setTabStopDistance(40)
+        text_edit.setText(start_text)
+        text_edit.setAcceptRichText(False)
+        vlo_all.addWidget(text_edit)
 
-        hloButtons = QHBoxLayout()
-        vloAll.addLayout(hloButtons)
+        hlo_buttons = QHBoxLayout()
+        vlo_all.addLayout(hlo_buttons)
 
-        hloButtons.addStretch()
-        acceptBtn = QPushButton("Accept")
-        hloButtons.addWidget(acceptBtn)
+        hlo_buttons.addStretch()
+        accept_btn = QPushButton("Accept")
+        hlo_buttons.addWidget(accept_btn)
         def _on_accept():
             res.accepted = True
-            res.text = textEdit.toPlainText()
+            res.text = text_edit.toPlainText()
             dialog.close()
-        acceptBtn.clicked.connect(_on_accept)
+        accept_btn.clicked.connect(_on_accept)
 
-        cancelBtn = QPushButton("Cancel")
-        hloButtons.addWidget(cancelBtn)
-        cancelBtn.clicked.connect(dialog.close)
+        cancel_btn = QPushButton("Cancel")
+        hlo_buttons.addWidget(cancel_btn)
+        cancel_btn.clicked.connect(dialog.close)
+
+        dialog.resize(w, h)
+        dialog.exec()
+
+        return res
+
+    class ListDialogRes:
+        def __init__(self):
+            self.accepted = False
+            self.chosenIndex = -1
+            self.chosenText = ""
+
+    @staticmethod
+    def list_dialog(caption_dialog: str, values: Sequence[str], w: int = 640, h: int = 480) -> ListDialogRes:
+        dialog = QDialog()
+        res = MyQDialogs.ListDialogRes()
+        dialog.setWindowTitle(caption_dialog)
+
+        vlo_all = QVBoxLayout(dialog)
+        list_widget = QListWidget()
+        list_widget.addItems(values)
+        vlo_all.addWidget(list_widget)
+
+        hlo_buttons = QHBoxLayout()
+        vlo_all.addLayout(hlo_buttons)
+
+        hlo_buttons.addStretch()
+        accept_btn = QPushButton("Accept")
+        hlo_buttons.addWidget(accept_btn)
+        def _on_accept():
+            item = list_widget.currentItem()
+            if not item:
+                qmb_error("Choose value or press cansel or close")
+                return
+            res.accepted = True
+            res.chosenText = item.text()
+            res.chosenIndex = list_widget.currentRow()
+            dialog.close()
+
+        list_widget.itemDoubleClicked.connect(_on_accept)
+        accept_btn.clicked.connect(_on_accept)
+
+        cancel_btn = QPushButton("Cancel")
+        hlo_buttons.addWidget(cancel_btn)
+        cancel_btn.clicked.connect(dialog.close)
 
         dialog.resize(w, h)
         dialog.exec()
