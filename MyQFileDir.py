@@ -1,3 +1,4 @@
+import os
 from PySide6.QtCore import qCritical
 
 class MyQFileDir:
@@ -40,3 +41,15 @@ class MyQFileDir:
         except Exception:
             qCritical(f"MyQFileDir::Exception [{fileName}]")
             return MyQFileDir.ReadResult(False, "")
+
+    @staticmethod
+    def RemoveFile(fileName: str) -> str:
+        try:
+            os.remove(fileName)
+        except FileNotFoundError:
+            return f"Ошибка: Файл {fileName} не найден."
+        except PermissionError:
+            return f"Ошибка: Недостаточно прав для удаления файла {fileName}."
+        except Exception as e:
+            return f"Произошла непредвиденная ошибка: {e} при удалении файла {fileName}."
+        return ''
