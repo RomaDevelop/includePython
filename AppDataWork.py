@@ -19,7 +19,7 @@ class AppDataWork:
             qmb_error("file " + fileExePath + " doesn't exist")
             return ""
 
-        readRes = MyQFileDir.ReadFile(fileExePath)
+        readRes = MyQFileDir.read_file(fileExePath)
         if not readRes.success:
             qmb_error("error reading " + fileExePath)
             return ""
@@ -57,7 +57,7 @@ class AppDataWork:
         fileReady = folder + "/" + "MessageFileInAppData_" + \
                     QDateTime.currentDateTime().toString(DateTimeFormatForFileName_ms) + ".txt"
 
-        if not MyQFileDir.WriteFile(filePreparing, message):
+        if not MyQFileDir.write_file(filePreparing, message):
             qmb_error("error writing " + filePreparing)
         else:
             if not QFile.rename(filePreparing, fileReady):
