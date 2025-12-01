@@ -112,9 +112,10 @@ class MyQDialogs:
     class MenuItem:
         SEPARATOR = 'separator'
 
-        def __init__(self, text, worker):
+        def __init__(self, text, worker, childItems = None):
             self.text = text
             self.worker = worker
+            self.childItems = childItems
 
         @staticmethod
         def separator():
@@ -136,16 +137,26 @@ class MyQDialogs:
         def trigger_action(menu_item: MyQDialogs.MenuItem):
             menu_item.worker()
 
-        for item in items:
-            if item.text == MyQDialogs.MenuItem.SEPARATOR: menu.addSeparator()
-            else:
-                if not item.worker:
-                    qmb_error("nullptr worker in action " + item.text)
-                    continue
+        def add_items_in_menu(a_items, a_menu: QMenu):
+            for item in a_items:
+                if item.text == MyQDialogs.MenuItem.SEPARATOR:
+                    a_menu.addSeparator()
+                else:
+                    if item.childItems:
+                        submenu = QMenu(item.text, a_menu)
+                        a_menu.addMenu(submenu)
+                        add_items_in_menu(item.childItems, submenu)
+                        if item.worker: qmb_error("worker on submenu, it can't be called")
+                    else:
+                        if not item.worker:
+                            qmb_error("nullptr worker in action " + item.text)
+                            continue
 
-                action = QAction(item.text, menu)
-                menu.addAction(action)
-                action.triggered.connect(lambda _, item_copy=item: trigger_action(item_copy))
+                        action = QAction(item.text, a_menu)
+                        a_menu.addAction(action)
+                        action.triggered.connect(lambda _, item_copy=item: trigger_action(item_copy))
+
+        add_items_in_menu(items, menu)
 
         menu.exec(pos)
 
