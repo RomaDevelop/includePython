@@ -12,7 +12,7 @@ from my_shortings import qmb_error
 class MyQDialogs:
 
     @staticmethod
-    def show_text(captionDialog: str, text: str = '', w: int = 640, h: int = 480):
+    def show_text(captionDialog: str, text: str, w: int = 640, h: int = 480):
         dialog = QDialog()
         dialog.setWindowTitle(captionDialog)
 
