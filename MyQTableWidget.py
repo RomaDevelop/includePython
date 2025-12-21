@@ -13,12 +13,16 @@ class MyQTableWidget(QTableWidget):
 
     def save_cols_visibility(self) -> str:
         columns_visible = ''
+        columns_visible += '1,' if self.verticalHeader().isVisible() else '0,'
         for col in range(self.columnCount()): columns_visible += '0,' if self.isColumnHidden(col) else '1,'
         columns_visible = columns_visible[:-1]
         return columns_visible
 
     def load_cols_visibility(self, saved_value: str):
         columns_visible_vals = saved_value.split(',')
+        if columns_visible_vals:
+            self.verticalHeader().setVisible(True if columns_visible_vals[0] == '1' else False)
+            del columns_visible_vals[0]
         col = 0
         for val in columns_visible_vals:
             if self.columnCount() <= col:

@@ -1,3 +1,4 @@
+from typing import Optional
 import os
 import shutil
 from functools import cmp_to_key
@@ -11,8 +12,13 @@ class MyQFileDir:
             self.success = success
             self.content = content
 
+    class ReadListResult:
+        def __init__(self, success: bool, content: list[str]):
+            self.success = success
+            self.content = content
+
     @staticmethod
-    def write_file(file_name, content, encoding="utf-8"):
+    def write_file(file_name, content: str, encoding="utf-8") -> bool:
         try:
             with open(file_name, "w", encoding=encoding) as f:
                 f.write(content)
@@ -25,6 +31,23 @@ class MyQFileDir:
             return False
 
     @staticmethod
+    def write_list_to_file(file_name: str, content: list[str], encoding: str = "utf-8") -> bool:
+        # noinspection PyBroadException
+        try:
+            with open(file_name, "w", encoding=encoding) as f:
+                # Используем генератор, чтобы добавить \n к каждой строке "на лету"
+                # Это эффективнее, чем конкатенация строк в памяти через ''.join(), или поштучная запись
+                # Ну, так гугл сказал...
+                f.writelines(line + '\n' for line in content)
+            return True
+        except LookupError:
+            qCritical(f"MyQFileDir::WriteListFile unknown codec [{encoding}]")
+            return False
+        except Exception as e:
+            qCritical(f"MyQFileDir::WriteListFile can't write to file [{file_name}]: {e}")
+            return False
+
+    @staticmethod
     def read_file(file_name: str, encoding: str = None) -> ReadResult:
         # noinspection PyBroadException
         try:
@@ -33,17 +56,38 @@ class MyQFileDir:
                 content = f.read()
             return MyQFileDir.ReadResult(True, content)
         except LookupError:
-            qCritical(f"MyQFileDir::WriteFile unknown codec [{encoding}]")
+            qCritical(f"MyQFileDir::ReadFile unknown codec [{encoding}]")
             return MyQFileDir.ReadResult(False, "")
         except FileNotFoundError:
-            qCritical(f"MyQFileDir::ReadFile2 can't open file [{file_name}]")
+            qCritical(f"MyQFileDir::ReadFile can't open file [{file_name}]")
             return MyQFileDir.ReadResult(False, "")
         except OSError:
-            qCritical(f"MyQFileDir::ReadFile2 can't read file [{file_name}]")
+            qCritical(f"MyQFileDir::ReadFile can't read file [{file_name}]")
             return MyQFileDir.ReadResult(False, "")
         except Exception:
             qCritical(f"MyQFileDir::Exception [{file_name}]")
             return MyQFileDir.ReadResult(False, "")
+
+    @staticmethod
+    def read_file_to_list(file_name: str, encoding: Optional[str] = None) -> ReadListResult:
+        enc = encoding if encoding else "utf-8"
+        # noinspection PyBroadException
+        try:
+            with open(file_name, "r", encoding=enc) as f:
+                # rstrip('\n') удаляет символ переноса, сохраняя структуру
+                content = [line.rstrip('\n') for line in f]
+
+            return MyQFileDir.ReadListResult(True, content)
+
+        except LookupError:
+            print(f"MyQFileDir::ReadFile unknown codec [{enc}]")
+            return MyQFileDir.ReadListResult(False, [])
+        except FileNotFoundError:
+            print(f"MyQFileDir::ReadFile can't open file [{file_name}]")
+            return MyQFileDir.ReadListResult(False, [])
+        except (OSError, Exception) as e:
+            print(f"MyQFileDir::Exception [{file_name}]: {e}")
+            return MyQFileDir.ReadListResult(False, [])
 
     @staticmethod
     # return empty string if ok or error text
@@ -75,6 +119,7 @@ class MyQFileDir:
 
     @staticmethod
     def remove_dir_with_content(directory: str) -> bool:
+        # noinspection PyBroadException
         try:
             shutil.rmtree(directory)
             return True
