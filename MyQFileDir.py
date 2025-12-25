@@ -127,15 +127,15 @@ class MyQFileDir:
             return False
 
     @staticmethod
-    def RemoveFile(fileName: str) -> str:
+    def remove_file(file_name: str) -> str:
         try:
-            os.remove(fileName)
+            os.remove(file_name)
         except FileNotFoundError:
-            return f"Ошибка: Файл {fileName} не найден."
+            return f"Ошибка: Файл {file_name} не найден."
         except PermissionError:
-            return f"Ошибка: Недостаточно прав для удаления файла {fileName}."
+            return f"Ошибка: Недостаточно прав для удаления файла {file_name}."
         except Exception as e:
-            return f"Произошла непредвиденная ошибка: {e} при удалении файла {fileName}."
+            return f"Произошла непредвиденная ошибка: {e} при удалении файла {file_name}."
         return ''
 
     class SortFlags:
@@ -158,25 +158,25 @@ class MyQFileDir:
                 content.pop(i)
             i -= 1
 
-        def cmpName(a, b):
+        def cmp_name(a, b):
             return -1 if a.fileName() < b.fileName() else (1 if a.fileName() > b.fileName() else 0)
 
-        def cmpModified(a, b):
+        def cmp_modified(a, b):
             if a.lastModified() != b.lastModified():
                 return -1 if a.lastModified() < b.lastModified() else 1
             return -1 if a.fileName() < b.fileName() else (1 if a.fileName() > b.fileName() else 0)
 
-        def cmpRead(a, b):
+        def cmp_read(a, b):
             if a.lastRead() != b.lastRead():
                 return -1 if a.lastRead() < b.lastRead() else 1
             return -1 if a.fileName() < b.fileName() else (1 if a.fileName() > b.fileName() else 0)
 
         if sortFlag == MyQFileDir.SortFlags.name:
-            content = sorted(content, key=cmp_to_key(cmpName))
+            content = sorted(content, key=cmp_to_key(cmp_name))
         elif sortFlag == MyQFileDir.SortFlags.modified:
-            content = sorted(content, key=cmp_to_key(cmpModified))
+            content = sorted(content, key=cmp_to_key(cmp_modified))
         elif sortFlag == MyQFileDir.SortFlags.read:
-            content = sorted(content, key=cmp_to_key(cmpRead))
+            content = sorted(content, key=cmp_to_key(cmp_read))
         elif sortFlag == MyQFileDir.SortFlags.no_sort:
             pass
         else:
