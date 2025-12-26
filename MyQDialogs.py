@@ -12,22 +12,24 @@ from my_shortings import qmb_error
 class MyQDialogs:
 
     @staticmethod
-    def show_text(captionDialog: str, text: str, w: int = 640, h: int = 480):
+    def show_text(caption_dialog: str, text: str, w: int = 640, h: int = 480):
         dialog = QDialog()
-        dialog.setWindowTitle(captionDialog)
+        dialog.setWindowTitle(caption_dialog)
 
-        vloAll = QVBoxLayout(dialog)
-        textEdit = QTextEdit()
-        textEdit.setReadOnly(True)
-        textEdit.setTabStopDistance(40)
-        textEdit.setText(text)
-        vloAll.addWidget(textEdit)
+        vlo_all = QVBoxLayout(dialog)
+        text_edit = QTextEdit()
+        text_edit.setReadOnly(True)
+        text_edit.setTabStopDistance(40)
+        text_edit.setText(text)
+        vlo_all.addWidget(text_edit)
         dialog.resize(w, h)
         dialog.exec()
 
     class InputTextRes:
         def __init__(self):
             self.accepted = False
+            self.text_has_changed = False
+            self.accepted_and_changed = False
             self.text = ""
 
     @staticmethod
@@ -59,8 +61,15 @@ class MyQDialogs:
         hlo_buttons.addWidget(cancel_btn)
         cancel_btn.clicked.connect(dialog.close)
 
+        def _on_text_changed():
+            res.text_has_changed = True
+        text_edit.textChanged.connect(_on_text_changed)
+
         dialog.resize(w, h)
         dialog.exec()
+
+        if res.text_has_changed: res.text_has_changed = (res.text == start_text)
+        res.accepted_and_changed = (res.accepted and res.text_has_changed)
 
         return res
 
