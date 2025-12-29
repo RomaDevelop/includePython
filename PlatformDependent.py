@@ -2,6 +2,8 @@ import os
 import ctypes
 from ctypes import wintypes
 
+import win32gui
+
 class PlatformDependent:
     @staticmethod
     def open_file_properties(filepath: str) -> bool:
@@ -43,3 +45,8 @@ class PlatformDependent:
 
         ShellExecuteEx(ctypes.byref(sei))
         return True
+
+    @staticmethod
+    def set_foreground(window):
+        hwnd = int(window.winId())
+        win32gui.SetForegroundWindow(hwnd)

@@ -68,7 +68,7 @@ class MyQDialogs:
         dialog.resize(w, h)
         dialog.exec()
 
-        if res.text_has_changed: res.text_has_changed = (res.text == start_text)
+        if res.text_has_changed: res.text_has_changed = (res.text != start_text)
         res.accepted_and_changed = (res.accepted and res.text_has_changed)
 
         return res
