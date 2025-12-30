@@ -3,6 +3,9 @@ import ctypes
 from ctypes import wintypes
 
 import win32gui
+import win32con
+
+from PySide6.QtCore import QTimer
 
 class PlatformDependent:
     @staticmethod
@@ -48,5 +51,20 @@ class PlatformDependent:
 
     @staticmethod
     def set_foreground(window):
+        """ Работает только для поднятия на верхний уровень при нажатии иконки в трее,
+                а при событиях вызывает ошибки из-за защиты Windows """
         hwnd = int(window.winId())
         win32gui.SetForegroundWindow(hwnd)
+
+    @staticmethod
+    def set_top_most(window, top_most: bool):
+        hwnd = int(window.winId())
+        z_order = win32con.HWND_TOPMOST if top_most else win32con.HWND_NOTOPMOST
+        flags = win32con.SWP_NOMOVE | win32con.SWP_NOSIZE | win32con.SWP_SHOWWINDOW
+        win32gui.SetWindowPos(hwnd, z_order, 0, 0, 0, 0, flags)
+
+    @staticmethod
+    def set_top_most_flash(window):
+        PlatformDependent.set_top_most(window, True)
+        #PlatformDependent.set_top_most(window, False)
+        QTimer.singleShot(100, lambda : PlatformDependent.set_top_most(window, False))
