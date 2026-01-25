@@ -51,8 +51,9 @@ class PlatformDependent:
 
     @staticmethod
     def set_foreground(window):
-        """ Работает только для поднятия на верхний уровень при нажатии иконки в трее,
-                а при событиях вызывает ошибки из-за защиты Windows """
+        """ Работает только для поднятия на верхний уровень, например при нажатии иконки в трее,
+                но если set_foreground вызвано внутренним событием приложения -
+                не срабатывает, вероятно из-за защиты Windows """
         hwnd = int(window.winId())
         win32gui.SetForegroundWindow(hwnd)
 

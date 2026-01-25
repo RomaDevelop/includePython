@@ -1,9 +1,8 @@
 from collections.abc import Sequence
-from typing import List
 
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenu, QWidget, QDialog, QMessageBox, QVBoxLayout, QTextEdit, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QMenu, QWidget, QDialog, QMessageBox, QVBoxLayout, QLabel, QLineEdit, QTextEdit, QPushButton, QHBoxLayout
 from PySide6.QtWidgets import QListWidget, QCheckBox, QListWidgetItem
 
 from my_shortings import qmb_error
@@ -66,6 +65,53 @@ class MyQDialogs:
         text_edit.textChanged.connect(_on_text_changed)
 
         dialog.resize(w, h)
+        dialog.exec()
+
+        if res.text_has_changed: res.text_has_changed = (res.text != start_text)
+        res.accepted_and_changed = (res.accepted and res.text_has_changed)
+
+        return res
+
+    @staticmethod
+    def input_line(caption_dialog: str, text_in_dialog: str = '', start_text: str = '', w: int = 640) -> InputTextRes:
+        dialog = QDialog()
+        res = MyQDialogs.InputTextRes()
+        dialog.setWindowTitle(caption_dialog)
+
+        vlo_all = QVBoxLayout(dialog)
+
+        label = QLabel(text_in_dialog)
+        vlo_all.addWidget(label)
+
+        line_edit = QLineEdit()
+        line_edit.setText(start_text)
+        line_edit.setSelection(0, len(start_text))
+        vlo_all.addWidget(line_edit)
+
+        hlo_buttons = QHBoxLayout()
+        vlo_all.addLayout(hlo_buttons)
+
+        hlo_buttons.addStretch()
+        accept_btn = QPushButton("Accept")
+        hlo_buttons.addWidget(accept_btn)
+
+        def _on_accept():
+            res.accepted = True
+            res.text = line_edit.text()
+            dialog.close()
+
+        accept_btn.clicked.connect(_on_accept)
+
+        cancel_btn = QPushButton("Cancel")
+        hlo_buttons.addWidget(cancel_btn)
+        cancel_btn.clicked.connect(dialog.close)
+
+        def _on_text_changed():
+            res.text_has_changed = True
+
+        line_edit.textChanged.connect(_on_text_changed)
+
+        dialog.setFixedWidth(w)
         dialog.exec()
 
         if res.text_has_changed: res.text_has_changed = (res.text != start_text)
